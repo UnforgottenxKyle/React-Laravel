@@ -62,9 +62,29 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UserRequest $request, string $id)
     {
-        //
+        try {
+            $user = User::find($id);
+            if(!$user){
+                return response()->json([
+                    'message' => "User Not Found",
+                ], 404);
+            }
+
+            $user->name = $request->name;
+            $user->email = $request->email;
+
+            $user->save();
+
+            return response()->json([
+                    'message' => "Successfully Update",
+                ], 200);
+        } catch (\Exception $e){
+            return response()->json([
+            'message' => "Something went wrong"
+        ], 500);
+        }
     }
 
     /**
@@ -72,6 +92,17 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $userfind = User::find($id);
+        if(!$userfind){
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        $userfind->delete();
+
+        return response()->json([
+            'message' => 'Successfully Deleted',
+        ]);
     }
 }
